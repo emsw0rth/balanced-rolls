@@ -2,10 +2,13 @@
 ## Title: Gargul - Balanced Rolls
 ## Notes: Adjusts roll results based on attendance-weighted modifiers. A Gargul plugin.
 ## Author: patrickwlarsen
-## Version: 1.1.0
+## Version: 1.2.0
 ## Dependencies: Gargul
-## SavedVariables: BalancedRollsDB
+## SavedVariables: BalancedRollsDB, GargulHistoryDB
 
 Core.lua
+LootHistory.lua
+LootHistoryUI.lua
+MainWindow.lua
 Import.lua
 RollTracker.lua

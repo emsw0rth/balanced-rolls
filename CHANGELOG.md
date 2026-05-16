@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.2.0] - 2026-05-16
+
+### Added
+- Main "Balanced Rolls" window opened from the minimap icon or `/br`, replacing the direct-to-import flow
+- "Import Data" button on the main window opens the existing import dialog
+- Imported-player list showing Name, Raid-Helper Name, and Roll Modifier (modifier colored green for >1, red for <1)
+- `raidHelperName` field on imported player entries
+- "Loot History" button on the main window — opens a sortable, exportable history of all loot Gargul has awarded
+  - Columns: Date, Player, Item (sortable; click headers to toggle direction)
+  - Item links with tooltips on hover
+  - Export to JSON or CSV
+  - Clear history with confirmation
+  - Reads/writes the same `GargulHistoryDB` SavedVariable as the standalone Gargul_History addon, so existing history is preserved
+
+### Changed
+- Minimap icon left-click now opens the main window instead of the import window directly
+- Imported list automatically refreshes after a successful import
+
+### Removed
+- Standalone `Gargul_History` addon (functionality merged into Balanced Rolls — disable or remove the old addon to avoid duplicate award entries)
+
 ## [1.1.0] - 2026-03-29
 
 ### Added

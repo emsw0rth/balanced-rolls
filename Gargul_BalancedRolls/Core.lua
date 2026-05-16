@@ -1,7 +1,7 @@
 local BR = {}
 _G.BalancedRolls = BR
 
-BR.version = "1.1.0"
+BR.version = "1.2.0"
 BR.PlayerData = {}      -- imported data keyed by lowercase name
 BR.EventFrame = CreateFrame("Frame")
 
@@ -59,12 +59,18 @@ function BR:ImportData(jsonString)
         local key = entry.name:lower()
         self.PlayerData[key] = {
             name = entry.name,
+            raidHelperName = entry.raidHelperName or "",
             rollModifier = tonumber(entry.rollModifier) or 1,
         }
         BalancedRollsDB.PlayerData[key] = self.PlayerData[key]
     end
 
     self:Print("Imported data for " .. #parsed .. " players.")
+
+    if self.RefreshMainWindowList then
+        self:RefreshMainWindowList()
+    end
+
     return true
 end
 
@@ -92,12 +98,12 @@ function BR:InitMinimapButton()
         icon = "Interface/AddOns/Gargul_BalancedRolls/Assets/Icons/dice",
         OnClick = function(_, button)
             if button == "LeftButton" then
-                BR:ToggleImportWindow()
+                BR:ToggleMainWindow()
             end
         end,
         OnTooltipShow = function(tooltip)
             tooltip:AddLine("Balanced Rolls")
-            tooltip:AddLine("|cFFFFFFFFLeft-click:|r Open import window", 1, 1, 1)
+            tooltip:AddLine("|cFFFFFFFFLeft-click:|r Open Balanced Rolls", 1, 1, 1)
         end,
     })
 
@@ -108,7 +114,7 @@ end
 SLASH_BALANCEDROLLS1 = "/br"
 SLASH_BALANCEDROLLS2 = "/balancedrolls"
 SlashCmdList["BALANCEDROLLS"] = function()
-    BR:ToggleImportWindow()
+    BR:ToggleMainWindow()
 end
 
 -- Bootstrap on addon load
