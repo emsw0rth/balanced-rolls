@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0] - 2026-06-14
+
+### Added
+- `/br announce` slash command that posts the current modified rolls to raid/party chat (name, raw roll, modifier, adjusted result), deduped so repeated calls only push new rolls
+
+### Changed
+- Loot history export is CSV only; format switcher and JSON output removed from the export window
+
+### Removed
+- Automatic raid/party chat announcement when a roll is intercepted (use `/br announce` instead)
+
 ## [1.2.0] - 2026-05-16
 
 ### Added

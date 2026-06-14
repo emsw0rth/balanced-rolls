@@ -9,7 +9,6 @@ local HistoryUI = {
     Rows = {},
     sortField = "date",
     sortAscending = false,
-    exportFormat = "JSON",
 }
 
 BR.LootHistoryUI = HistoryUI
@@ -379,22 +378,6 @@ function HistoryUI:Refresh()
     end
 end
 
-function HistoryUI:HistoryToJSON()
-    local parts = {}
-    for _, entry in ipairs(getHistory()) do
-        local itemName = (entry.item and entry.item.name or "Unknown"):gsub('"', '\\"')
-        local itemId = entry.item and entry.item.id or "0"
-        local awardedTo = (entry.awardedTo or "Unknown"):gsub('"', '\\"')
-        local entryDate = (entry.date or ""):gsub('"', '\\"')
-
-        table.insert(parts, string.format(
-            '{"date":"%s","awardedTo":"%s","item":{"name":"%s","id":"%s"}}',
-            entryDate, awardedTo, itemName, itemId
-        ))
-    end
-    return "[" .. table.concat(parts, ",") .. "]"
-end
-
 function HistoryUI:ShowExportWindow()
     if self.ExportWindow then
         self.ExportWindow:Show()
@@ -439,51 +422,9 @@ function HistoryUI:ShowExportWindow()
     CloseButton:SetPoint("TOPRIGHT", Window, "TOPRIGHT", -2, -2)
     CloseButton:HookScript("OnClick", function() Window:Hide() end)
 
-    local FormatLabel = Window:CreateFontString(nil, "OVERLAY")
-    FormatLabel:SetFont(FONT, 11)
-    FormatLabel:SetPoint("TOPLEFT", Window, "TOPLEFT", 12, -32)
-    FormatLabel:SetTextColor(0.7, 0.7, 0.7, 1)
-    FormatLabel:SetText("Format:")
-
-    local formats = { "JSON", "CSV" }
-    local formatButtons = {}
-    local prevBtn
-    for i, fmt in ipairs(formats) do
-        local btn = CreateFrame("Button", nil, Window, "BackdropTemplate")
-        btn:SetSize(50, 20)
-        if i == 1 then
-            btn:SetPoint("LEFT", FormatLabel, "RIGHT", 8, 0)
-        else
-            btn:SetPoint("LEFT", prevBtn, "RIGHT", 4, 0)
-        end
-        btn:SetBackdrop({
-            bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-            tile = true, tileSize = 8, edgeSize = 8,
-            insets = { left = 2, right = 2, top = 2, bottom = 2 },
-        })
-
-        local label = btn:CreateFontString(nil, "OVERLAY")
-        label:SetFont(FONT, 11, "OUTLINE")
-        label:SetPoint("CENTER")
-        label:SetText(fmt)
-        btn.label = label
-        btn.format = fmt
-
-        btn:SetScript("OnClick", function()
-            self.exportFormat = fmt
-            self:UpdateFormatButtons()
-            self:UpdateExportText()
-        end)
-
-        formatButtons[i] = btn
-        prevBtn = btn
-    end
-    self.formatButtons = formatButtons
-
     local Hint = Window:CreateFontString(nil, "OVERLAY")
     Hint:SetFont(FONT, 11)
-    Hint:SetPoint("LEFT", prevBtn, "RIGHT", 16, 0)
+    Hint:SetPoint("TOPLEFT", Window, "TOPLEFT", 12, -32)
     Hint:SetTextColor(0.5, 0.5, 0.5, 1)
     Hint:SetText("Ctrl+A to select all, Ctrl+C to copy")
 
@@ -509,23 +450,7 @@ function HistoryUI:ShowExportWindow()
 
     tinsert(UISpecialFrames, "BalancedRollsLootHistoryExportWindow")
 
-    self:UpdateFormatButtons()
     self:UpdateExportText()
-end
-
-function HistoryUI:UpdateFormatButtons()
-    if not self.formatButtons then return end
-    for _, btn in ipairs(self.formatButtons) do
-        if btn.format == self.exportFormat then
-            btn:SetBackdropColor(0.3, 0.3, 0.6, 0.9)
-            btn:SetBackdropBorderColor(0.59, 0.5, 0.82, 1)
-            btn.label:SetTextColor(1, 1, 1, 1)
-        else
-            btn:SetBackdropColor(0.15, 0.15, 0.15, 0.8)
-            btn:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
-            btn.label:SetTextColor(0.6, 0.6, 0.6, 1)
-        end
-    end
 end
 
 local function csvEscape(value)
@@ -556,13 +481,7 @@ end
 
 function HistoryUI:UpdateExportText()
     if not self.ExportEditBox then return end
-    local text
-    if self.exportFormat == "CSV" then
-        text = self:HistoryToCSV()
-    else
-        text = self:HistoryToJSON()
-    end
-    self.ExportEditBox:SetText(text)
+    self.ExportEditBox:SetText(self:HistoryToCSV())
     C_Timer.After(0, function()
         if self.ExportScrollFrame then
             self.ExportEditBox:SetWidth(self.ExportScrollFrame:GetWidth())

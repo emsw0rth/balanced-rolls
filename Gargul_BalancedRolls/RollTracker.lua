@@ -4,7 +4,7 @@ local GL -- set after Gargul loads
 BR.RollEntries = {}
 BR.rollRows = {}
 BR.rollActive = false
-BR.announcedRolls = {} -- track announced rolls to avoid duplicates
+BR.announcedRolls = {} -- tracks which rolls have already been announced via /br announce
 
 ---------------------------------------------------------------------------
 -- Constants
@@ -81,23 +81,6 @@ function BR:ProcessRolls()
             classification = roll.classification or "",
             priority = roll.priority or 99,
         })
-
-        -- Announce new rolls to raid chat
-        local rollKey = name .. ":" .. roll.amount .. ":" .. (roll.classification or "")
-        if not self.announcedRolls[rollKey] then
-            self.announcedRolls[rollKey] = true
-            local resultStr
-            if adjustedRoll == math.floor(adjustedRoll) then
-                resultStr = tostring(math.floor(adjustedRoll))
-            else
-                resultStr = string.format("%.1f", adjustedRoll)
-            end
-            local msg = name .. " rolled " .. roll.amount .. " with modifier " .. tostring(modifier) .. " resulting in: " .. resultStr
-            local channel = IsInRaid() and "RAID" or IsInGroup() and "PARTY" or nil
-            if channel then
-                SendChatMessage(msg, channel)
-            end
-        end
     end
 
     table.sort(self.RollEntries, function(a, b)
@@ -108,6 +91,45 @@ function BR:ProcessRolls()
     end)
 
     self:RefreshRollDisplay()
+end
+
+---------------------------------------------------------------------------
+-- Announce rolls to raid/party chat
+---------------------------------------------------------------------------
+function BR:AnnounceRolls()
+    local channel = IsInRaid() and "RAID" or IsInGroup() and "PARTY" or nil
+    if not channel then
+        self:Print("Not in a group - nothing to announce.")
+        return
+    end
+
+    if not self.RollEntries or #self.RollEntries == 0 then
+        self:Print("No rolls to announce.")
+        return
+    end
+
+    local sent = 0
+    for _, entry in ipairs(self.RollEntries) do
+        local rollKey = entry.name .. ":" .. entry.rawRoll .. ":" .. (entry.classification or "")
+        if not self.announcedRolls[rollKey] then
+            self.announcedRolls[rollKey] = true
+            local resultStr
+            if entry.adjustedRoll == math.floor(entry.adjustedRoll) then
+                resultStr = tostring(math.floor(entry.adjustedRoll))
+            else
+                resultStr = string.format("%.1f", entry.adjustedRoll)
+            end
+            local msg = entry.name .. " rolled " .. entry.rawRoll
+                .. " with modifier " .. tostring(entry.modifier)
+                .. " resulting in: " .. resultStr
+            SendChatMessage(msg, channel)
+            sent = sent + 1
+        end
+    end
+
+    if sent == 0 then
+        self:Print("All current rolls have already been announced.")
+    end
 end
 
 ---------------------------------------------------------------------------

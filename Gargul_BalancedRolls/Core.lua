@@ -1,7 +1,7 @@
 local BR = {}
 _G.BalancedRolls = BR
 
-BR.version = "1.2.0"
+BR.version = "1.3.0"
 BR.PlayerData = {}      -- imported data keyed by lowercase name
 BR.EventFrame = CreateFrame("Frame")
 
@@ -113,8 +113,15 @@ end
 -- Slash command
 SLASH_BALANCEDROLLS1 = "/br"
 SLASH_BALANCEDROLLS2 = "/balancedrolls"
-SlashCmdList["BALANCEDROLLS"] = function()
-    BR:ToggleMainWindow()
+SlashCmdList["BALANCEDROLLS"] = function(msg)
+    local cmd = (msg or ""):match("^%s*(%S+)") or ""
+    cmd = cmd:lower()
+
+    if cmd == "announce" then
+        BR:AnnounceRolls()
+    else
+        BR:ToggleMainWindow()
+    end
 end
 
 -- Bootstrap on addon load

@@ -8,7 +8,7 @@ A [Gargul](https://github.com/papa-sern/Gargul) plugin for World of Warcraft TBC
 2. **Import player data** — Click **Import Data** and paste a JSON array of players with their roll modifiers. Imported players appear in the list below, showing Name | Raid-Helper Name | Roll Modifier.
 3. **Roll on loot** — When the master looter starts a roll via Gargul, Balanced Rolls automatically displays a window showing each roller's result multiplied by their modifier.
 4. **Review adjusted results** — The window shows the calculation (`roll * modifier`) and the final adjusted result, sorted highest to lowest.
-5. **View loot history** — Click **Loot History** in the main window to see every item Gargul has awarded, sortable by date, player, or item. Exportable to JSON or CSV.
+5. **View loot history** — Click **Loot History** in the main window to see every item Gargul has awarded, sortable by date, player, or item. Exportable to CSV.
 
 ### Example roll display
 
@@ -20,7 +20,7 @@ A [Gargul](https://github.com/papa-sern/Gargul) plugin for World of Warcraft TBC
 | Mehndi       | OS   | 52 * 0.9     | 46.8   |
 ```
 
-Rolls are sorted by type priority (MS before OS), then by adjusted result within each type. The top roller in each type group is highlighted in green. Each roll is also announced in raid chat with the modifier and adjusted result.
+Rolls are sorted by type priority (MS before OS), then by adjusted result within each type. The top roller in each type group is highlighted in green. Run `/br announce` to post the current modified rolls to raid/party chat.
 
 ## Import data format
 
@@ -55,7 +55,7 @@ Balanced Rolls listens for Gargul's `ITEM_AWARDED` event and records every award
 - **Player** — Who received the item
 - **Item** — The item link (hover for tooltip)
 
-Click any column header to sort. Use **Export** to copy the full history as JSON or CSV (`Ctrl+A` then `Ctrl+C`). Use **Clear History** to wipe the log (with confirmation).
+Click any column header to sort. Use **Export** to copy the full history as CSV (`Ctrl+A` then `Ctrl+C`). Use **Clear History** to wipe the log (with confirmation).
 
 > If you previously used the standalone `Gargul_History` addon, your existing history carries over automatically. **Disable or remove the old addon** to avoid recording every award twice.
 
@@ -76,4 +76,5 @@ The Balanced Rolls roll-display window attaches to Gargul's loot distribution wi
 ## Commands
 
 - `/br` or `/balancedrolls` — Open the main window
+- `/br announce` — Post the current modified rolls to raid/party chat
 - Minimap icon left-click — Open the main window
